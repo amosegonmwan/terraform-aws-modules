@@ -1,6 +1,6 @@
 variable "topic_name" {
   type = string
-  default = "my-topic"
+  #default = "my-topic"
 }
 
 variable "team" {
