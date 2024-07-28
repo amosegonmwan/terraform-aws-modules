@@ -1,4 +1,3 @@
-# Terraform state storage bucket
 resource "aws_s3_bucket" "bucket" {
   bucket = "${var.team}-${random_pet.bucket_name.id}-${random_integer.bucket_int.result}"
 
@@ -19,6 +18,22 @@ resource "random_integer" "bucket_int" {
 }
 
 resource "aws_sns_topic" "topic" {
-  name              = var.topic_name
-  #policy            = data.aws_iam_policy_document.topic.json
+  name   = var.topic_name
+  policy = data.aws_iam_policy_document.topic.json
+}
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.bucket.id
+
+  topic {
+    topic_arn     = aws_sns_topic.topic.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_suffix = ".log"
+  }
+}
+
+resource "aws_sns_topic_subscription" "email" {
+  endpoint  = "amos.egonmwan@hotmail.com"
+  protocol  = "email"
+  topic_arn = aws_sns_topic.topic.arn
 }
